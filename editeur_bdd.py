@@ -69,12 +69,54 @@ if action == '-h':
     print("fonctions: (-v) Verification des url")
     print("fonctions: (-e <table>) Renseignement du champ titre de toutes les entrées de la table renseignée")
     print("fonctions: (-i) initialisation des variables d'environement")
+    print("fonctions: (-tt) conpte le total d'entrées du juke-box, toutes catégories confondues")
     print("fonctions: (-l <table>) lecture des tables appelé sans option liste les tables présentes")
     print("- - - - - - - - - - - - - - - - - - - - - -  - - - - -  - - - - - - - - - -")
     print("exemple: editeur_bdd.py -a https://www.youtube.com/embed/A4F414LFY6I?rel=0")
 else:
     pass
 
+
+##### Mode total des Entrées
+if action == '-tt':
+    try:
+        cursor.execute("""SELECT SUM(somme) 
+                          FROM (SELECT COUNT(*) somme FROM hiphop
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM trancegoa
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM folk
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM hardcore
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM hardteck
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM classique
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM electro
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM wtf
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM punk
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM zeul
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM chansons
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM darkwave
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM rockpsy
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM raggae
+                                UNION ALL
+                                SELECT COUNT(*) somme FROM bluejazz
+                                ) table_temp;""")
+        Copte = cursor.fetchall()
+        nb= Copte[0]
+        nb= str(nb[0])
+        print(nb+" - Entrées")
+    except Exception as e:
+        print("Lecture Impossible. Cause:"+str(e))
 
 
 ##### Mode Lecture
