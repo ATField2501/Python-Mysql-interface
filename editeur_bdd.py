@@ -13,6 +13,7 @@ tables= ['hiphop','trancegoa','folk','hardteck','hardcore','chansons', 'bluejazz
 gamma=[]
 show=[]
 tron= False
+arbre= False
 
 print("---------------")
 print("- atfield2501 -")
@@ -201,60 +202,97 @@ else:
 
 ####### MODE VERIFICATION
 if action == '-e':
+    if arbre == True:
+        try:
+            cursor.execute("""SELECT id, url, titre FROM """+cibleA+""" WHERE id="""+cibleB+""" """)
+            rows = cursor.fetchall()
+            for row in rows:
+                print('{0} : {1} - {2}'.format(row[0], row[1], row[2]))
+                cible=row[1]
+                vrac= os.system('curl '+cible+' 2>/dev/null | grep '"title"' > .tmp_recherche.txt ' )
 
-    ## Lecture d'une url à partir de la bdd
-    try:
-        id=1
-        ff=0
-        # compte le nombre d'entrées
-        cursor.execute("""select count(*) from """+cibleA+""" """)
-        Copte = cursor.fetchall()
-        nb= Copte[0]
-        nb= str(nb[0])
-        nb1= int(nb)
-
-        while ff != nb1:
-            idd=str(id)
-            try:
-                cursor.execute("""SELECT id, url, titre FROM """+cibleA+""" WHERE id="""+idd+""" """)
-                rows = cursor.fetchall()
-                for row in rows:
-                    print('{0} : {1} - {2}'.format(row[0], row[1], row[2]))
-                    cible=row[1]
-                    vrac= os.system('curl '+cible+' 2>/dev/null | grep '"title"' > .tmp_recherche.txt ' )
-
-                    with open(".tmp_recherche.txt", "r") as f:  # Fonction d'analyse du titre de l'url
-                        try:
-                            for line in f.readlines():
-                                if '<title>' in line:
-                                    iioonnn = line.split('<title>')
-                                    iii= iioonnn[1]
-                                    ii= iii.split('</title>')
+                with open(".tmp_recherche.txt", "r") as f:  # Fonction d'analyse du titre de l'url
+                    try:
+                        for line in f.readlines():
+                            if '<title>' in line:
+                                iioonnn = line.split('<title>')
+                                iii= iioonnn[1]
+                                ii= iii.split('</title>')
                            
-                                    folio=str(ii[0]) 
-                                    spirale= folio.replace('&quot;' , '"')
-                                    spirale= folio.replace('&#39;' , "'")
-                                    print("* titre: {0}".format(spirale)) 
+                                folio=str(ii[0]) 
+                                spirale= folio.replace("'" , " ")
+                                print(folio)
+                                print("* titre: {0}".format(spirale)) 
 
-                                    try:
-                                        # Ecriture dans la bdd
-                                 #       spirale= folio.decode('utf8', errors='replace')
-                                        cursor.execute( """UPDATE """+cibleA+""" SET titre='"""+folio+"""' WHERE id='"""+idd+"""' """)
-                                        print("-- ECRITURE      --  OK")
-                                    except Exception as e:
-                                        print("Ecriture Impossible. Cause:"+str(e))
-                                    id += 1
-                                    ff += 1
+                                try:
+                                    # Ecriture dans la bdd
+                                    #       spirale= folio.decode('utf8', errors='replace')
+                                    cursor.execute( """UPDATE """+cibleA+""" SET titre='"""+spirale+"""' WHERE id='"""+cibleB+"""' """)
+                                    print("-- ECRITURE      --  OK")
+                                except Exception as e:
+                                    print("Ecriture Impossible. Cause:"+str(e))
                                     break
-                        except:
-                            pass
+                    except:
+                        pass
 
-            except:
-                pass
+        except:
+            pass        
 
 
-    except Exception as e:
-        print(str(e))
+    else:
+        ## Lecture d'une url à partir de la bdd
+        try:
+            id=1
+            ff=0
+            # compte le nombre d'entrées
+            cursor.execute("""select count(*) from """+cibleA+""" """)
+            Copte = cursor.fetchall()
+            nb= Copte[0]
+            nb= str(nb[0])
+            nb1= int(nb)
+
+            while ff != nb1:
+                idd=str(id)
+                try:
+                    cursor.execute("""SELECT id, url, titre FROM """+cibleA+""" WHERE id="""+idd+""" """)
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        print('{0} : {1} - {2}'.format(row[0], row[1], row[2]))
+                        cible=row[1]
+                        vrac= os.system('curl '+cible+' 2>/dev/null | grep '"title"' > .tmp_recherche.txt ' )
+
+                        with open(".tmp_recherche.txt", "r") as f:  # Fonction d'analyse du titre de l'url
+                            try:
+                                for line in f.readlines():
+                                    if '<title>' in line:
+                                        iioonnn = line.split('<title>')
+                                        iii= iioonnn[1]
+                                        ii= iii.split('</title>')
+                           
+                                        folio=str(ii[0]) 
+                                        spirale= folio.replace("♫ " , " ")
+                                        spirale= folio.replace("'" , " ")
+                                        print("* titre: {0}".format(spirale)) 
+
+                                        try:
+                                            # Ecriture dans la bdd
+                                     #       spirale= folio.decode('utf8', errors='replace')
+                                            cursor.execute( """UPDATE """+cibleA+""" SET titre='"""+spirale+"""' WHERE id='"""+idd+"""' """)
+                                            print("-- ECRITURE      --  OK")
+                                        except Exception as e:
+                                            print("Ecriture Impossible. Cause:"+str(e))
+                                        id += 1
+                                        ff += 1
+                                        break
+                            except:
+                                pass
+
+                except:
+                    pass
+
+
+        except Exception as e:
+            print(str(e))
 
 
     conn.close()
