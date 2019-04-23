@@ -41,7 +41,7 @@ def verif(url):
 
 ## Connexion à la bdd
 try:
-    conn = mysql.connector.connect(host="localhost",user="root",password="=mdp=^^", database="atfield2501")
+    conn = mysql.connector.connect(host=localisation,user=utilisateur,password=mdp, database=baseDonnees)
     cursor = conn.cursor()
     print("Connexion à la base de données     OK \n")
 except:
