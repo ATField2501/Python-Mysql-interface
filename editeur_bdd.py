@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-# -*- coding: utf8 -*-
+# coding: utf8
 
 import mysql.connector 
 import os
@@ -73,8 +73,10 @@ if action == '-e':
     if arbre == True:
         session.edition_uni(cibleA,cibleB)    
     else:
-        session.edition_all(cibleA)
-
+        try:
+            session.edition_all(cibleA)
+        except NameError:
+            print("* Vous devez spécifiez une table *")
 
 ###### Decoonexion
 session.deconn()
